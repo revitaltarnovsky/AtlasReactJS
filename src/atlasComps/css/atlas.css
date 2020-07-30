@@ -1,0 +1,11 @@
+.nav{
+    min-height: 32px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+nav a{
+    color:black;
+    padding:0 12px;
+  }
