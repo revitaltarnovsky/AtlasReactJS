@@ -10,9 +10,11 @@ function Header (props){
         <div className="container bg-light border">
             {countries_ar.map(item=>{
                 return(
-                <Link to={item} style={{color:"black",padding:"0 12px"}} key={item}>{item}</Link>
+                <Link to={`/country/`+item} style={{color:"black",padding:"0 12px"}} key={item}>{item}</Link>
                 )
             })}
+           
+            
         </div>
    </div>
   )
