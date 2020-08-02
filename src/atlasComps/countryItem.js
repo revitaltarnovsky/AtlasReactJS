@@ -27,7 +27,7 @@ function CountryItem (props){
         <div key={item.numericCode}>
           <div className="row justify-content-center align-items-center">
             <div style={{width:"25%"}}> 
-              <img className="float-left mr-2" src={item.flag} height="180"/>
+              <img className="float-left w-75 mr-2" src={item.flag}/>
             </div>
             <div>
               <h2>{item.name}</h2>
