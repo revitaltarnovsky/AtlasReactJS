@@ -1,33 +1,64 @@
 import React,{useState, useEffect} from 'react';
 import "./css/atlas.css"
 import { Map, Marker, TileLayer } from 'react-leaflet';
+import {Link} from "react-router-dom"
 
 function CountryItem (props){
-  let [country,setCountry] = useState([])
+  let [country,setCountry] = useState([]);
+  let [loading,setLoading] = useState(true);
 
   useEffect(()=>{
     let url="https://restcountries.eu/rest/v2/name/"
+    let allUrl ='https://restcountries.eu/rest/v2/all'
+    let allData = [];
+    fetch(allUrl).then(res=>res.json()).then(data=>allData=data);
     if(props.match){
       if(props.match.params.countryName){
-        url = "https://restcountries.eu/rest/v2/name/"+props.match.params.countryName
+        url = "https://restcountries.eu/rest/v2/name/"+props.match.params.countryName+"?fullText=true"
+      }
+      if(props.match.params.codeName){
+        url="https://restcountries.eu/rest/v2/alpha/"+props.match.params.codeName
       }
     }
     fetch(url)
     .then(resp=>resp.json())
     .then(data=>{
-      console.log(data)
-      setCountry(data)
+      if(!Array.isArray(data)){
+        if(data.status){
+          setCountry([]);
+          setLoading(false);
+        }
+        else {
+          let temp=[]
+          data.borders.map((item,i)=>{
+            allData.map(country=>{
+              if(country.alpha3Code === item)data.borders[i] = country.name;
+            })
+          })
+          temp.push(data)
+          setLoading(false);
+          setCountry(temp);
+        }
+      }
+      else{
+        data[0].borders.map((item,i)=>{
+          allData.map(country=>{
+            if(country.alpha3Code === item)data[0].borders[i]=country.name;
+          })
+        })
+
+        setCountry(data)
+      }  
     })
-    
   },[props.match])
   return(
-    <div >
-      {country.map(item=>{
+    <div  className="text-center">
+      {country.length > 0 ? country.map(item=>{
         return(
-        <div key={item.numericCode}>
+        <div key={item.numericCode} >
           <div className="row justify-content-center align-items-center">
-            <div style={{width:"25%"}}> 
-              <img className="float-left w-75 mr-2" src={item.flag}/>
+            <div className="w-25"> 
+              <img className="float-right w-50 mr-2" src={item.flag}/>
             </div>
             <div>
               <h2>{item.name}</h2>
@@ -46,29 +77,38 @@ function CountryItem (props){
           </div>
           <div className="row justify-content-center align-items-center ">
           <div className="leaflet-container float-left mr-5">
-          <Map center={[item.latlng[0],item.latlng[1]]} zoom={7}>
-            <TileLayer
-              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <Marker
-              position={[item.latlng[0],item.latlng[1]]}
-            />
-          </Map>
+            {(item.latlng.length>0)?
+                <Map center={[item.latlng[0],item.latlng[1]]} zoom={7}>
+                <TileLayer
+                  url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Marker
+                  position={[item.latlng[0],item.latlng[1]]}
+                />
+              </Map>: <Map center={[0,0]} zoom={7}>
+                <TileLayer
+                  url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Marker
+                  position={[0,0]}
+                />
+              </Map>
+            }
+          
           </div>
           <div>
             Borders with states: {item.borders.map(item=>{
-              return(
-                <span>
-                  {item + " "}
-                </span>
-              ) 
+                if(item.length === 3) return <Link to={`/code/`+ item} key={item}>{item + " "}</Link>
+                else return <Link to={`/country/`+ item} key={item}>{item + " "}</Link>
+      
             })}
           </div>
           </div>
         
         </div>
-        )})}
+        )}) : loading ? <h2>Loading</h2> : <h2>Nothing Found</h2>}
       
       
 
