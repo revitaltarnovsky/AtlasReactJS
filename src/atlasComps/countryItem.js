@@ -1,18 +1,25 @@
 import React,{useState, useEffect} from 'react';
 import "./css/atlas.css"
 import { Map, Marker, TileLayer } from 'react-leaflet';
-import {Link} from "react-router-dom"
+import {Link,useHistory} from "react-router-dom"
 
 function CountryItem (props){
   let [country,setCountry] = useState([]);
   let [loading,setLoading] = useState(true);
-
+  let [first , setFirst] = useState(true);
+  let [all,setAll] = useState([]);
+let history = useHistory();
   useEffect(()=>{
     let url="https://restcountries.eu/rest/v2/name/"
     let allUrl ='https://restcountries.eu/rest/v2/all'
-    let allData = [];
-    fetch(allUrl).then(res=>res.json()).then(data=>allData=data);
+
+    if(first){
+      fetch(allUrl).then(res=>res.json()).then(data=>{setAll(data);setFirst(false);});
+    }
     if(props.match){
+      if(props.match.url === '/'){
+        history.push('/country/ISRAEL')
+      }
       if(props.match.params.countryName){
         url = "https://restcountries.eu/rest/v2/name/"+props.match.params.countryName+"?fullText=true"
       }
@@ -31,7 +38,7 @@ function CountryItem (props){
         else {
           let temp=[]
           data.borders.map((item,i)=>{
-            allData.map(country=>{
+          all.map(country=>{
               if(country.alpha3Code === item)data.borders[i] = country.name;
             })
           })
@@ -42,7 +49,7 @@ function CountryItem (props){
       }
       else{
         data[0].borders.map((item,i)=>{
-          allData.map(country=>{
+          all.map(country=>{
             if(country.alpha3Code === item)data[0].borders[i]=country.name;
           })
         })
