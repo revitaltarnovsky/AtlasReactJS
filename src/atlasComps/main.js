@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route} from "react-router-dom";
 import CountryItem from './countryItem';
-// import BorderCountry from './borderCountry';
+
 
 
 function Main (props){
