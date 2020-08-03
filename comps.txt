@@ -1,0 +1,30 @@
+import React from 'react';
+
+function AppDate (props){
+
+  return(
+    <div>
+      AppDate work
+    </div>
+  )
+}
+
+export default AppDate
+
+
+
+import React,{Component} from "react";
+
+class Footer extends Component{
+  render(){
+    return(
+      <div>
+        Footer work
+      </div>
+    
+    )
+  }
+}
+
+export default Footer;
+
